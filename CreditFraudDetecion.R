@@ -111,3 +111,53 @@ c(accuracy_xgb,accuracy_xgb_kval)
 
 [1] 0.9993500 0.9996875
 
+######################## 2 Support Vector Machine ##################
+
+# Fitting Kernel SVM to the Training set
+# install.packages('e1071')
+library(e1071)
+classifier = svm(formula = Class ~ .,
+                 data = training_set,
+                 type = 'C-classification',
+                 kernel = 'radial')
+
+# Predicting the Test set results
+y_pred = predict(classifier, newdata = test_set[-30])
+
+# Making the Confusion Matrix
+cm = table(test_set[, 30], y_pred)
+cm
+accuracy = (cm[1,1]+cm[2,2]) /margin.table(cm)
+accuracy
+# Applying k-Fold Cross Validation
+# install.packages('caret')
+library(caret)
+folds = createFolds(training_set$Class, k = 10)
+cv = lapply(folds, function(x) {
+  training_fold = training_set[-x, ]
+  test_fold = training_set[x, ]
+  classifier = svm(formula = Purchased ~ .,
+                   data = training_fold,
+                   type = 'C-classification',
+                   kernel = 'radial')
+  y_pred = predict(classifier, newdata = test_fold[-3])
+  cm = table(test_fold[, 3], y_pred)
+  accuracy = (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
+  return(accuracy)
+})
+accuracy = mean(as.numeric(cv))
+accuracy
+# Applying Grid Search to find the best parameters
+# install.packages('caret')
+library(caret)
+classifier = train(form = Class ~ ., data = training_set, method = 'svmRadial')
+classifier
+classifier$bestTune
+
+######################## 3 Random Forest ##############################
+
+
+######################## 4 multi Logistic Regression ##################
+
+
+######################## 5 Naïve Bayes. ###############################
