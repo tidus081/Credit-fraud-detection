@@ -73,14 +73,25 @@ test_set = subset(dataset, split == FALSE)
 library(xgboost)
 classifier = xgboost(data = as.matrix(training_set[-30]), label = training_set$Class, nrounds = 10)
 
+[1]	train-rmse:0.350282 
+[2]	train-rmse:0.245575 
+[3]	train-rmse:0.172391 
+[4]	train-rmse:0.121337 
+[5]	train-rmse:0.085836 
+[6]	train-rmse:0.061289 
+[7]	train-rmse:0.044501 
+[8]	train-rmse:0.033252 
+[9]	train-rmse:0.025722 
+[10]	train-rmse:0.021219 
+
 # Predicting the Test set results
 y_pred = predict(classifier, newdata = as.matrix(test_set[-30]))
 y_pred = (y_pred >= 0.5)
 
 # Making the Confusion Matrix
 cm = table(test_set[, 30], y_pred)
-accuracy = (cm[1,1]+cm[2,2]) /margin.table(cm)
-accuracy
+accuracy_xgb = (cm[1,1]+cm[2,2]) /margin.table(cm)
+
 # Applying k-Fold Cross Validation
 # install.packages('caret')
 library(caret)
@@ -95,5 +106,8 @@ cv = lapply(folds, function(x) {
   accuracy = (cm[1,1]+cm[2,2]) /margin.table(cm)
   return(accuracy)
 })
-accuracy = mean(as.numeric(cv))
-accuracy
+accuracy_xgb_kval = mean(as.numeric(cv))
+c(accuracy_xgb,accuracy_xgb_kval)
+
+[1] 0.9993500 0.9996875
+
