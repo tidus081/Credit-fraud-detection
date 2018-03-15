@@ -1,2 +1,2 @@
 # Credit-fraud-detection
-Classify credit fraud using Machine Learning algorithms
+Classify credit frauds using Machine Learning algorithms
